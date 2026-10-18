@@ -32,25 +32,38 @@ MainMic is running, it will switch it straight back. That's on purpose.
 
 ## Install
 
-You need the Xcode Command Line Tools (`xcode-select --install`).
+**Option 1: Terminal (one line).** Paste this into Terminal:
 
 ```bash
-git clone https://github.com/seastwood/mainmic.git
-cd mainmic
-./build.sh --install     # builds, copies to /Applications, launches
+curl -L https://github.com/seastwood/mainmic/releases/latest/download/MainMic.zip -o /tmp/MainMic.zip && ditto -x -k /tmp/MainMic.zip /Applications && xattr -dr com.apple.quarantine /Applications/MainMic.app && open /Applications/MainMic.app
 ```
 
-Or download `MainMic.zip` from the latest **Build** run under the repo's Actions tab, unzip it, move it to
-/Applications, then run:
+**Option 2: Download.**
+
+1. Download **[MainMic.zip](https://github.com/seastwood/mainmic/releases/latest/download/MainMic.zip)** from the
+   [latest release](https://github.com/seastwood/mainmic/releases/latest).
+2. Unzip it and drag **MainMic.app** into **Applications**.
+3. The app isn't signed by Apple, so open Terminal once and run:
+   ```bash
+   xattr -dr com.apple.quarantine /Applications/MainMic.app
+   ```
+4. Open MainMic. A 🎙 icon appears in the menu bar. It starts at login automatically.
+
+To update, follow the same steps again (quit MainMic from its menu first). Your priority list is kept.
+
+**Build from source.** You need the Xcode Command Line Tools (`xcode-select --install`):
 
 ```bash
-xattr -dr com.apple.quarantine /Applications/MainMic.app
+git clone https://github.com/seastwood/mainmic.git && cd mainmic && ./build.sh --install
 ```
-
-macOS blocks unsigned downloads by default, and that command clears the block.
 
 MainMic doesn't need microphone permission. It only changes which device is the default input and never records
 audio.
+
+## Releasing
+
+Push a version tag (for example `git tag v1.0.1 && git push origin v1.0.1`). The Release workflow builds the app and
+publishes `MainMic.zip` to GitHub Releases.
 
 ## Logs
 
