@@ -66,6 +66,11 @@ Run the **Release** workflow from the Actions tab (Run workflow → enter a vers
 (`git tag v1.0.1 && git push origin v1.0.1`). The workflow builds the app, creates the tag and publishes `MainMic.zip`
 to GitHub Releases.
 
+## App icon
+
+The icon is drawn by `scripts/make_icon.py`. Run `python3 scripts/make_icon.py` (needs Pillow) to regenerate
+`Resources/AppIcon.icns` after changing it.
+
 ## Logs
 
 ```bash
