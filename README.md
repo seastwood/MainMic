@@ -16,14 +16,14 @@ or any other headset can't take over the input when they connect.
 
 ## Menu
 
-Click the 🎙 icon in the menu bar:
+Click the MainMic icon (a handheld microphone) in the menu bar:
 
 | Item | What it does |
 | --- | --- |
 | Input: … | The current system input |
 | Last fix: … | The last time MainMic switched the input back, and from which device |
 | 1. MacBook Air Microphone ✓ | The priority list. The check mark is the active device. Hover over a device for **Make Top Priority / Move Up / Move Down / Move to Bottom / Never Use This Mic / Forget Device** |
-| Pause Auto-Switching | Stops enforcing the list for now (the icon changes to a crossed-out mic) |
+| Pause Auto-Switching | Stops enforcing the list for now (the icon changes to a pause symbol) |
 | Launch at Login | Turned on automatically at first launch |
 
 To use your AirPods mic for a call, choose **AirPods → Make Top Priority**. When you're done, move the MacBook mic
@@ -47,7 +47,7 @@ curl -L https://github.com/seastwood/mainmic/releases/latest/download/MainMic.zi
    ```bash
    xattr -dr com.apple.quarantine /Applications/MainMic.app
    ```
-4. Open MainMic. A 🎙 icon appears in the menu bar. It starts at login automatically.
+4. Open MainMic. A handheld-microphone icon appears in the menu bar. It starts at login automatically.
 
 To update, follow the same steps again (quit MainMic from its menu first). Your priority list is kept.
 
@@ -62,8 +62,9 @@ audio.
 
 ## Releasing
 
-Push a version tag (for example `git tag v1.0.1 && git push origin v1.0.1`). The Release workflow builds the app and
-publishes `MainMic.zip` to GitHub Releases.
+Run the **Release** workflow from the Actions tab (Run workflow → enter a version like `v1.0.1`), or push a tag
+(`git tag v1.0.1 && git push origin v1.0.1`). The workflow builds the app, creates the tag and publishes `MainMic.zip`
+to GitHub Releases.
 
 ## Logs
 

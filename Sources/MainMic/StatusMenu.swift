@@ -24,7 +24,8 @@ final class StatusMenu: NSObject, NSMenuDelegate {
     }
 
     private func updateIcon() {
-        let symbol = controller.isPaused ? "mic.slash" : "mic.fill"
+        // A handheld "stage" mic, so it isn't confused with the macOS mic-in-use indicator.
+        let symbol = controller.isPaused ? "pause.circle" : "music.mic"
         let image = NSImage(systemSymbolName: symbol, accessibilityDescription: "MainMic")
         image?.isTemplate = true
         statusItem.button?.image = image
