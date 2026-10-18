@@ -14,6 +14,12 @@ S = 4  # supersampling factor
 N = 1024 * S
 
 
+# Shared with Sources/MainMic/Glyph.swift: keep both in sync so the app icon
+# and the menu bar icon are the same shape.
+BAR_HEIGHTS = [0.42, 0.78, 1.0, 0.62, 0.30]
+GAP_RATIO = 0.6  # gap between bars as a fraction of bar width
+
+
 def lerp(a, b, t):
     return tuple(round(x + (y - x) * t) for x, y in zip(a, b))
 
@@ -26,6 +32,17 @@ def vertical_gradient(size, top, bottom):
     return img
 
 
+def bar_rects(x0, y0, width, height):
+    count = len(BAR_HEIGHTS)
+    w = width / (count + GAP_RATIO * (count - 1))
+    g = w * GAP_RATIO
+    mid = y0 + height / 2
+    for i, h in enumerate(BAR_HEIGHTS):
+        bh = max(w, height * h)
+        x = x0 + i * (w + g)
+        yield [x, mid - bh / 2, x + w, mid + bh / 2], w / 2
+
+
 def draw_icon():
     canvas = Image.new("RGBA", (N, N), (0, 0, 0, 0))
 
@@ -33,63 +50,31 @@ def draw_icon():
     tile = 824 * S
     offset = (N - tile) // 2
     radius = 185 * S
+    box = [offset, offset, offset + tile, offset + tile]
     mask = Image.new("L", (N, N), 0)
-    ImageDraw.Draw(mask).rounded_rectangle(
-        [offset, offset, offset + tile, offset + tile], radius=radius, fill=255)
+    ImageDraw.Draw(mask).rounded_rectangle(box, radius=radius, fill=255)
 
     shadow = Image.new("RGBA", (N, N), (0, 0, 0, 0))
-    shadow.paste((0, 0, 0, 90), (0, 12 * S), mask)
+    shadow.paste((0, 0, 0, 110), (0, 10 * S), mask)
     shadow = shadow.filter(ImageFilter.GaussianBlur(14 * S))
     canvas.alpha_composite(shadow)
 
-    background = vertical_gradient(N, (255, 138, 76), (214, 46, 112))
-    canvas.paste(background, (0, 0), mask)
+    # Dark graphite tile with a hairline edge so it holds up on a dark Dock.
+    canvas.paste(vertical_gradient(N, (46, 48, 54), (22, 23, 27)), (0, 0), mask)
+    edge = Image.new("RGBA", (N, N), (0, 0, 0, 0))
+    ImageDraw.Draw(edge).rounded_rectangle(box, radius=radius, outline=(255, 255, 255, 34), width=4 * S)
+    canvas.alpha_composite(edge)
 
-    # Handheld microphone, drawn upright on its own layer and then tilted.
-    mic = Image.new("RGBA", (N, N), (0, 0, 0, 0))
-    d = ImageDraw.Draw(mic)
-    cx = N // 2
-    head_r = 150 * S
-    head_cy = 360 * S
-
-    # Handle: a tapered body under the head.
-    top_w, bottom_w = 92 * S, 58 * S
-    handle_top = head_cy + head_r - 30 * S
-    handle_bottom = 830 * S
-    d.polygon([
-        (cx - top_w, handle_top), (cx + top_w, handle_top),
-        (cx + bottom_w, handle_bottom), (cx - bottom_w, handle_bottom),
-    ], fill=(250, 250, 252, 255))
-    d.ellipse([cx - bottom_w, handle_bottom - bottom_w // 2,
-               cx + bottom_w, handle_bottom + bottom_w // 2], fill=(250, 250, 252, 255))
-    # Collar ring between head and handle.
-    collar_y = handle_top + 10 * S
-    d.rounded_rectangle([cx - top_w - 14 * S, collar_y - 26 * S, cx + top_w + 14 * S, collar_y + 26 * S],
-                        radius=24 * S, fill=(60, 30, 60, 255))
-
-    # Head: a ball with a grille.
-    d.ellipse([cx - head_r, head_cy - head_r, cx + head_r, head_cy + head_r], fill=(250, 250, 252, 255))
-    grille = Image.new("L", (N, N), 0)
-    g = ImageDraw.Draw(grille)
-    step = 38 * S
-    for i in range(-6, 7):
-        x = cx + i * step
-        g.line([(x, head_cy - head_r), (x, head_cy + head_r)], fill=255, width=9 * S)
-        y = head_cy + i * step
-        g.line([(cx - head_r, y), (cx + head_r, y)], fill=255, width=9 * S)
-    head_mask = Image.new("L", (N, N), 0)
-    inset = 26 * S
-    ImageDraw.Draw(head_mask).ellipse(
-        [cx - head_r + inset, head_cy - head_r + inset, cx + head_r - inset, head_cy + head_r - inset], fill=255)
-    grille = Image.composite(grille, Image.new("L", (N, N), 0), head_mask)
-    mic.paste((214, 46, 112, 120), (0, 0), grille)
-
-    mic = mic.rotate(-28, resample=Image.BICUBIC, center=(N // 2, N // 2))
-    mic_shadow = Image.new("RGBA", (N, N), (0, 0, 0, 0))
-    mic_shadow.paste((60, 0, 30, 110), (0, 0), mic.getchannel("A"))
-    mic_shadow = mic_shadow.filter(ImageFilter.GaussianBlur(16 * S))
-    canvas.alpha_composite(mic_shadow, (6 * S, 18 * S))
-    canvas.alpha_composite(mic)
+    # Level bars in a single accent colour.
+    glyph_w, glyph_h = 470 * S, 440 * S
+    bars = Image.new("L", (N, N), 0)
+    d = ImageDraw.Draw(bars)
+    for rect, r in bar_rects((N - glyph_w) / 2, (N - glyph_h) / 2, glyph_w, glyph_h):
+        d.rounded_rectangle(rect, radius=r, fill=255)
+    glow = Image.new("RGBA", (N, N), (0, 0, 0, 0))
+    glow.paste((60, 220, 160, 90), (0, 0), bars)
+    canvas.alpha_composite(glow.filter(ImageFilter.GaussianBlur(28 * S)))
+    canvas.paste(vertical_gradient(N, (120, 245, 196), (40, 200, 140)), (0, 0), bars)
 
     return canvas.resize((1024, 1024), Image.LANCZOS)
 

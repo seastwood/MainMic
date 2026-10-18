@@ -16,14 +16,14 @@ or any other headset can't take over the input when they connect.
 
 ## Menu
 
-Click the MainMic icon (a handheld microphone) in the menu bar:
+Click the MainMic icon (five level bars) in the menu bar:
 
 | Item | What it does |
 | --- | --- |
 | Input: … | The current system input |
 | Last fix: … | The last time MainMic switched the input back, and from which device |
 | 1. MacBook Air Microphone ✓ | The priority list. The check mark is the active device. Hover over a device for **Make Top Priority / Move Up / Move Down / Move to Bottom / Never Use This Mic / Forget Device** |
-| Pause Auto-Switching | Stops enforcing the list for now (the icon changes to a pause symbol) |
+| Pause Auto-Switching | Stops enforcing the list for now (the bars flatten to dots) |
 | Launch at Login | Turned on automatically at first launch |
 
 To use your AirPods mic for a call, choose **AirPods → Make Top Priority**. When you're done, move the MacBook mic
@@ -47,7 +47,7 @@ curl -L https://github.com/seastwood/mainmic/releases/latest/download/MainMic.zi
    ```bash
    xattr -dr com.apple.quarantine /Applications/MainMic.app
    ```
-4. Open MainMic. A handheld-microphone icon appears in the menu bar. It starts at login automatically.
+4. Open MainMic. The MainMic level-bars icon appears in the menu bar. It starts at login automatically.
 
 To update, follow the same steps again (quit MainMic from its menu first). Your priority list is kept.
 
@@ -68,8 +68,9 @@ to GitHub Releases.
 
 ## App icon
 
-The icon is drawn by `scripts/make_icon.py`. Run `python3 scripts/make_icon.py` (needs Pillow) to regenerate
-`Resources/AppIcon.icns` after changing it.
+The app icon is drawn by `scripts/make_icon.py` and the menu bar icon by `Sources/MainMic/Glyph.swift`. Both use the
+same bar geometry, so change them together. Run `python3 scripts/make_icon.py` (needs Pillow) to regenerate
+`Resources/AppIcon.icns`.
 
 ## Logs
 
