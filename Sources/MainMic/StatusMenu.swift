@@ -126,14 +126,14 @@ final class StatusMenu: NSObject, NSMenuDelegate {
 
     // MARK: Actions
 
-    @objc private func moveToTop(_ sender: NSMenuItem) { if let uid = uid(sender) { controller.moveToTop(uid) } }
-    @objc private func moveUp(_ sender: NSMenuItem) { if let uid = uid(sender) { controller.moveUp(uid) } }
-    @objc private func moveDown(_ sender: NSMenuItem) { if let uid = uid(sender) { controller.moveDown(uid) } }
-    @objc private func moveToBottom(_ sender: NSMenuItem) { if let uid = uid(sender) { controller.moveToBottom(uid) } }
-    @objc private func forget(_ sender: NSMenuItem) { if let uid = uid(sender) { controller.forget(uid) } }
+    @objc private func moveToTop(_ sender: NSMenuItem) { if let uid = deviceUID(sender) { controller.moveToTop(uid) } }
+    @objc private func moveUp(_ sender: NSMenuItem) { if let uid = deviceUID(sender) { controller.moveUp(uid) } }
+    @objc private func moveDown(_ sender: NSMenuItem) { if let uid = deviceUID(sender) { controller.moveDown(uid) } }
+    @objc private func moveToBottom(_ sender: NSMenuItem) { if let uid = deviceUID(sender) { controller.moveToBottom(uid) } }
+    @objc private func forget(_ sender: NSMenuItem) { if let uid = deviceUID(sender) { controller.forget(uid) } }
 
     @objc private func toggleEnabled(_ sender: NSMenuItem) {
-        guard let uid = uid(sender),
+        guard let uid = deviceUID(sender),
               let device = controller.store.devices.first(where: { $0.uid == uid }) else { return }
         controller.setEnabled(uid, !device.enabled)
     }
@@ -166,5 +166,5 @@ final class StatusMenu: NSObject, NSMenuDelegate {
 
     @objc private func quit() { NSApp.terminate(nil) }
 
-    private func uid(_ sender: NSMenuItem) -> String? { sender.representedObject as? String }
+    private func deviceUID(_ sender: NSMenuItem) -> String? { sender.representedObject as? String }
 }
