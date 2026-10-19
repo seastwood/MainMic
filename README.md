@@ -75,7 +75,8 @@ audio.
 
 Run the **Release** workflow from the Actions tab (Run workflow → enter a version like `v1.0.1`), or push a tag
 (`git tag v1.0.1 && git push origin v1.0.1`). The workflow sets the app version from the tag, builds the app, creates
-the tag and publishes `MainMic.dmg` and `MainMic.zip` to GitHub Releases. To build the disk image locally, run
+the tag and publishes `MainMic.dmg` and `MainMic.zip` to GitHub Releases. If you create the release by hand on GitHub instead, the
+workflow attaches both files to it. To build the disk image locally, run
 `./build.sh --dmg`.
 
 ## App icon
