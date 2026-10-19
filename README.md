@@ -1,4 +1,12 @@
-# MainMic
+<p align="center">
+  <img src="Resources/AppIcon.png" alt="MainMic icon" width="160">
+</p>
+
+<h1 align="center">MainMic</h1>
+
+<p align="center">
+  <a href="https://buymeacoffee.com/eastwoodsee"><img src="https://img.shields.io/badge/Buy%20me%20a%20coffee-FFDD00?style=for-the-badge&logo=buymeacoffee&logoColor=black" alt="Buy me a coffee"></a>
+</p>
 
 A small menu bar app for macOS (built for the MacBook Air M4) that picks your microphone for you, so AirPods
 or any other headset can't take over the input when they connect.
@@ -77,3 +85,7 @@ same bar geometry, so change them together. Run `python3 scripts/make_icon.py` (
 ```bash
 log stream --predicate 'subsystem == "com.seastwood.mainmic"' --level info
 ```
+
+## Support
+
+If MainMic saves you from AirPods hijacking your mic, you can [buy me a coffee](https://buymeacoffee.com/eastwoodsee).
