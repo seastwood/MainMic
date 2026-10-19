@@ -8,6 +8,9 @@ on:
       version:
         description: "Version tag to create, e.g. v1.0.0"
         required: true
+      notes:
+        description: "Release notes (optional; replaces the notes if the release already exists)"
+        required: false
 
 permissions:
   contents: write
@@ -17,10 +20,16 @@ jobs:
     runs-on: macos-15
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - name: Set version from tag
         run: |
           TAG="${{ inputs.version || github.ref_name }}"
           echo "TAG=$TAG" >> "$GITHUB_ENV"
+          # Re-running for an existing tag builds that tag, not the branch head.
+          if git rev-parse -q --verify "refs/tags/$TAG" >/dev/null; then
+            git checkout -q "$TAG"
+          fi
           VERSION="${TAG#v}"
           /usr/libexec/PlistBuddy -c "Set :CFBundleShortVersionString $VERSION" Resources/Info.plist
           /usr/libexec/PlistBuddy -c "Set :CFBundleVersion $GITHUB_RUN_NUMBER" Resources/Info.plist
@@ -31,8 +40,17 @@ jobs:
       - name: Publish release
         env:
           GH_TOKEN: ${{ github.token }}
+          NOTES: ${{ inputs.notes }}
         run: |
+          DEFAULT_NOTES="Download **MainMic.dmg**, open it, and drag MainMic into Applications. See the README for install steps."
+          # A release made by hand on GitHub (which also pushes the tag) gets the
+          # built files attached instead of failing the run.
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            gh release upload "$TAG" build/MainMic.dmg build/MainMic.zip --clobber
+            if [[ -n "$NOTES" ]]; then gh release edit "$TAG" --notes "$NOTES"; fi
+            exit 0
+          fi
           gh release create "$TAG" build/MainMic.dmg build/MainMic.zip \
             --target "$GITHUB_SHA" \
             --title "MainMic $TAG" \
-            --notes "Download **MainMic.dmg**, open it, and drag MainMic into Applications. See the README for install steps."
+            --notes "${NOTES:-$DEFAULT_NOTES}"
