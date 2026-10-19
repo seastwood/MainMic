@@ -24,11 +24,12 @@ def lerp(a, b, t):
     return tuple(round(x + (y - x) * t) for x, y in zip(a, b))
 
 
-def vertical_gradient(size, top, bottom):
-    img = Image.new("RGBA", (size, size))
+def vertical_gradient(size, top, bottom, width=None):
+    width = width or size
+    img = Image.new("RGBA", (width, size))
     draw = ImageDraw.Draw(img)
     for y in range(size):
-        draw.line([(0, y), (size, y)], fill=lerp(top, bottom, y / (size - 1)) + (255,))
+        draw.line([(0, y), (width, y)], fill=lerp(top, bottom, y / (size - 1)) + (255,))
     return img
 
 
@@ -59,22 +60,26 @@ def draw_icon():
     shadow = shadow.filter(ImageFilter.GaussianBlur(14 * S))
     canvas.alpha_composite(shadow)
 
-    # Dark graphite tile with a hairline edge so it holds up on a dark Dock.
-    canvas.paste(vertical_gradient(N, (46, 48, 54), (22, 23, 27)), (0, 0), mask)
+    # Near-black tile with a hairline edge so it holds up on a dark Dock.
+    canvas.paste(vertical_gradient(N, (34, 32, 30), (12, 11, 10)), (0, 0), mask)
     edge = Image.new("RGBA", (N, N), (0, 0, 0, 0))
-    ImageDraw.Draw(edge).rounded_rectangle(box, radius=radius, outline=(255, 255, 255, 34), width=4 * S)
+    ImageDraw.Draw(edge).rounded_rectangle(box, radius=radius, outline=(255, 214, 140, 40), width=4 * S)
     canvas.alpha_composite(edge)
 
-    # Level bars in a single accent colour.
+    # Level bars in a gold gradient.
     glyph_w, glyph_h = 470 * S, 440 * S
     bars = Image.new("L", (N, N), 0)
     d = ImageDraw.Draw(bars)
     for rect, r in bar_rects((N - glyph_w) / 2, (N - glyph_h) / 2, glyph_w, glyph_h):
         d.rounded_rectangle(rect, radius=r, fill=255)
     glow = Image.new("RGBA", (N, N), (0, 0, 0, 0))
-    glow.paste((60, 220, 160, 90), (0, 0), bars)
+    glow.paste((230, 170, 50, 100), (0, 0), bars)
     canvas.alpha_composite(glow.filter(ImageFilter.GaussianBlur(28 * S)))
-    canvas.paste(vertical_gradient(N, (120, 245, 196), (40, 200, 140)), (0, 0), bars)
+    # Gold runs top-to-bottom across the glyph only, so every bar shows the shift.
+    gold = Image.new("RGBA", (N, N), (0, 0, 0, 0))
+    gy = (N - glyph_h) // 2
+    gold.paste(vertical_gradient(glyph_h, (255, 236, 170), (178, 112, 18), width=N), (0, gy))
+    canvas.paste(gold, (0, 0), bars)
 
     return canvas.resize((1024, 1024), Image.LANCZOS)
 
