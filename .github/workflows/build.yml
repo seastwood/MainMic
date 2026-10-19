@@ -11,10 +11,12 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Build app
-        run: ./build.sh
+        run: ./build.sh --dmg
       - name: Zip
         run: cd build && ditto -c -k --keepParent MainMic.app MainMic.zip
       - uses: actions/upload-artifact@v4
         with:
           name: MainMic
-          path: build/MainMic.zip
+          path: |
+            build/MainMic.dmg
+            build/MainMic.zip

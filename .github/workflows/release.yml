@@ -25,14 +25,14 @@ jobs:
           /usr/libexec/PlistBuddy -c "Set :CFBundleShortVersionString $VERSION" Resources/Info.plist
           /usr/libexec/PlistBuddy -c "Set :CFBundleVersion $GITHUB_RUN_NUMBER" Resources/Info.plist
       - name: Build app
-        run: ./build.sh
+        run: ./build.sh --dmg
       - name: Zip
         run: cd build && ditto -c -k --keepParent MainMic.app MainMic.zip
       - name: Publish release
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh release create "$TAG" build/MainMic.zip \
+          gh release create "$TAG" build/MainMic.dmg build/MainMic.zip \
             --target "$GITHUB_SHA" \
             --title "MainMic $TAG" \
-            --notes "Download **MainMic.zip**, unzip, and drag MainMic.app into Applications. See the README for install steps."
+            --notes "Download **MainMic.dmg**, open it, and drag MainMic into Applications. See the README for install steps."

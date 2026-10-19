@@ -4,13 +4,16 @@ import ServiceManagement
 @MainActor
 final class AppDelegate: NSObject, NSApplicationDelegate {
     private let controller = MicController()
+    private let updater = UpdateChecker()
     private var statusMenu: StatusMenu?
 
     func applicationDidFinishLaunching(_ notification: Notification) {
-        let menu = StatusMenu(controller: controller)
+        let menu = StatusMenu(controller: controller, updater: updater)
         statusMenu = menu
         controller.onChange = { [weak menu] in menu?.refresh() }
+        updater.onChange = { [weak menu] in menu?.refresh() }
         controller.start()
+        updater.start()
 
         // Re-assert after sleep: Bluetooth reconnects on wake and AirPods
         // frequently grab the input again.

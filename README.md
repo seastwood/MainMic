@@ -28,11 +28,14 @@ Click the MainMic icon (five level bars) in the menu bar:
 
 | Item | What it does |
 | --- | --- |
+| MainMic 1.2.0 | The installed version |
+| Up to date / Update Available: … | Whether a newer release is on GitHub. Click **Update Available** to open the release page |
 | Input: … | The current system input |
 | Last fix: … | The last time MainMic switched the input back, and from which device |
 | 1. MacBook Air Microphone ✓ | The priority list. The check mark is the active device. Hover over a device for **Make Top Priority / Move Up / Move Down / Move to Bottom / Never Use This Mic / Forget Device** |
 | Pause Auto-Switching | Stops enforcing the list for now (the bars flatten to dots) |
-| Launch at Login | Turned on automatically at first launch |
+| Launch at Login | Starts MainMic when you log in. Turned on automatically at first launch; uncheck to turn it off (also listed under System Settings → General → Login Items) |
+| Check for Updates | Checks GitHub now (MainMic also checks at launch and every few hours) |
 
 To use your AirPods mic for a call, choose **AirPods → Make Top Priority**. When you're done, move the MacBook mic
 back to the top, or just pause auto-switching. If you change the input in System Settings or Control Center while
@@ -48,16 +51,16 @@ curl -L https://github.com/seastwood/mainmic/releases/latest/download/MainMic.zi
 
 **Option 2: Download.**
 
-1. Download **[MainMic.zip](https://github.com/seastwood/mainmic/releases/latest/download/MainMic.zip)** from the
+1. Download **[MainMic.dmg](https://github.com/seastwood/mainmic/releases/latest/download/MainMic.dmg)** from the
    [latest release](https://github.com/seastwood/mainmic/releases/latest).
-2. Unzip it and drag **MainMic.app** into **Applications**.
+2. Open it and drag **MainMic** onto the **Applications** shortcut.
 3. The app isn't signed by Apple, so open Terminal once and run:
    ```bash
    xattr -dr com.apple.quarantine /Applications/MainMic.app
    ```
 4. Open MainMic. The MainMic level-bars icon appears in the menu bar. It starts at login automatically.
 
-To update, follow the same steps again (quit MainMic from its menu first). Your priority list is kept.
+When a new version is out, the menu shows **Update Available**. To update, follow the same steps again (quit MainMic from its menu first). Your priority list is kept.
 
 **Build from source.** You need the Xcode Command Line Tools (`xcode-select --install`):
 
@@ -71,8 +74,9 @@ audio.
 ## Releasing
 
 Run the **Release** workflow from the Actions tab (Run workflow → enter a version like `v1.0.1`), or push a tag
-(`git tag v1.0.1 && git push origin v1.0.1`). The workflow builds the app, creates the tag and publishes `MainMic.zip`
-to GitHub Releases.
+(`git tag v1.0.1 && git push origin v1.0.1`). The workflow sets the app version from the tag, builds the app, creates
+the tag and publishes `MainMic.dmg` and `MainMic.zip` to GitHub Releases. To build the disk image locally, run
+`./build.sh --dmg`.
 
 ## App icon
 

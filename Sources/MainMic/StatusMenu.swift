@@ -6,11 +6,13 @@ import ServiceManagement
 @MainActor
 final class StatusMenu: NSObject, NSMenuDelegate {
     private let controller: MicController
+    private let updater: UpdateChecker
     private let statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.squareLength)
     private let menu = NSMenu()
 
-    init(controller: MicController) {
+    init(controller: MicController, updater: UpdateChecker) {
         self.controller = controller
+        self.updater = updater
         super.init()
         menu.delegate = self
         menu.autoenablesItems = false
@@ -25,18 +27,24 @@ final class StatusMenu: NSObject, NSMenuDelegate {
 
     private func updateIcon() {
         statusItem.button?.image = Glyph.menuBarImage(paused: controller.isPaused)
-        statusItem.button?.toolTip = "MainMic — input: \(controller.currentInput?.name ?? "none")"
+        var tip = "MainMic \(UpdateChecker.currentVersion) — input: \(controller.currentInput?.name ?? "none")"
+        if case .available(let version, _) = updater.status { tip += "\nUpdate available: \(version)" }
+        statusItem.button?.toolTip = tip
     }
 
     // MARK: NSMenuDelegate
 
     func menuNeedsUpdate(_ menu: NSMenu) {
         controller.enforce()
+        updater.checkIfStale()
         rebuild()
     }
 
     private func rebuild() {
         menu.removeAllItems()
+
+        addVersionItems()
+        menu.addItem(.separator())
 
         let current = controller.currentInput
         menu.addItem(disabled("Input: \(current?.name ?? "None")"))
@@ -63,8 +71,37 @@ final class StatusMenu: NSObject, NSMenuDelegate {
         menu.addItem(login)
 
         menu.addItem(action("Open Sound Settings…", #selector(openSoundSettings)))
+        menu.addItem(action("Check for Updates", #selector(checkForUpdates), enabled: updater.status != .checking))
         menu.addItem(.separator())
         menu.addItem(action("Quit MainMic", #selector(quit), key: "q"))
+    }
+
+    private func addVersionItems() {
+        let header = disabled("MainMic \(UpdateChecker.currentVersion)")
+        header.attributedTitle = NSAttributedString(
+            string: header.title,
+            attributes: [.font: NSFont.boldSystemFont(ofSize: NSFont.systemFontSize)])
+        menu.addItem(header)
+
+        switch updater.status {
+        case .unknown:
+            break
+        case .checking:
+            menu.addItem(disabled("Checking for updates…"))
+        case .upToDate:
+            menu.addItem(disabled("Up to date"))
+        case .failed:
+            menu.addItem(disabled("Couldn't check for updates"))
+        case .available(let version, let url):
+            let item = NSMenuItem(title: "Update Available: \(version) — Download…",
+                                  action: #selector(openRelease(_:)), keyEquivalent: "")
+            item.target = self
+            item.representedObject = url
+            item.attributedTitle = NSAttributedString(
+                string: item.title,
+                attributes: [.foregroundColor: NSColor.controlAccentColor])
+            menu.addItem(item)
+        }
     }
 
     private func deviceItem(_ device: KnownDevice, rank: Int, isCurrent: Bool) -> NSMenuItem {
@@ -159,6 +196,12 @@ final class StatusMenu: NSObject, NSMenuDelegate {
         if let url = URL(string: "x-apple.systempreferences:com.apple.Sound-Settings.extension") {
             NSWorkspace.shared.open(url)
         }
+    }
+
+    @objc private func checkForUpdates() { updater.check() }
+
+    @objc private func openRelease(_ sender: NSMenuItem) {
+        NSWorkspace.shared.open(sender.representedObject as? URL ?? UpdateChecker.releasesPage)
     }
 
     @objc private func quit() { NSApp.terminate(nil) }
