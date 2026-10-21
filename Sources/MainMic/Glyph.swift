@@ -4,7 +4,7 @@ import AppKit
 /// "1" with a flag and a base (the main mic). The geometry matches
 /// scripts/make_icon.py so the menu bar icon and the app icon are the same shape.
 enum Glyph {
-    static let barHeights: [CGFloat] = [0.42, 0.60, 1.0, 0.62, 0.30]
+    static let barHeights: [CGFloat] = [0.30, 0.60, 1.0, 0.62, 0.42]
     static let gapRatio: CGFloat = 0.6
     /// The "1" flag runs from the top of the centre bar down to the left, this far in
     /// bar widths (between the rounded ends' centres), at this fraction of a bar's width.

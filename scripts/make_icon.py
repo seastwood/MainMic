@@ -17,7 +17,7 @@ N = 1024 * S
 
 # Shared with Sources/MainMic/Glyph.swift: keep both in sync so the app icon
 # and the menu bar icon are the same shape.
-BAR_HEIGHTS = [0.42, 0.60, 1.0, 0.62, 0.30]
+BAR_HEIGHTS = [0.30, 0.60, 1.0, 0.62, 0.42]
 GAP_RATIO = 0.6  # gap between bars as a fraction of bar width
 # The centre bar is drawn as a "1": a flag runs from the top of the bar down
 # to the left, this far (in bar widths, between the rounded ends' centres).
