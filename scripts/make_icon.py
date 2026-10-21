@@ -23,6 +23,9 @@ GAP_RATIO = 0.6  # gap between bars as a fraction of bar width
 # to the left, this far (in bar widths, between the rounded ends' centres).
 ONE_FLAG_DX, ONE_FLAG_DY = 0.9, 0.5
 ONE_FLAG_WIDTH = 0.75  # flag thickness as a fraction of bar width
+# ...and it stands on a base this far either side of the bar's centre (in bar
+# widths, to the rounded ends' centres), as thick as the flag.
+ONE_BASE_HALF = 0.8
 
 
 def lerp(a, b, t):
@@ -55,6 +58,14 @@ def one_flag(rect, r):
     fr = w * ONE_FLAG_WIDTH / 2
     cx, cy = (rect[0] + rect[2]) / 2, rect[1] + fr
     return (cx, cy), (cx - ONE_FLAG_DX * w, cy + ONE_FLAG_DY * w), fr
+
+
+def one_base(rect, r):
+    """Start and end centres of the "1" base under the centre bar's rect."""
+    w = rect[2] - rect[0]
+    fr = w * ONE_FLAG_WIDTH / 2
+    cx, cy = (rect[0] + rect[2]) / 2, rect[3] - fr
+    return (cx - ONE_BASE_HALF * w, cy), (cx + ONE_BASE_HALF * w, cy), fr
 
 
 def draw_capsule(d, start, end, r):
@@ -96,6 +107,7 @@ def draw_icon():
         d.rounded_rectangle(rect, radius=r, fill=255)
         if i == len(BAR_HEIGHTS) // 2:
             draw_capsule(d, *one_flag(rect, r))
+            draw_capsule(d, *one_base(rect, r))
     glow = Image.new("RGBA", (N, N), (0, 0, 0, 0))
     glow.paste((230, 170, 50, 100), (0, 0), bars)
     canvas.alpha_composite(glow.filter(ImageFilter.GaussianBlur(28 * S)))

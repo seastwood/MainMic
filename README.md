@@ -24,7 +24,7 @@ or any other headset can't take over the input when they connect.
 
 ## Menu
 
-Click the MainMic icon (five level bars, the middle one a "1") in the menu bar:
+Click the MainMic icon (five level bars, the middle one a "1" with a base) in the menu bar:
 
 | Item | What it does |
 | --- | --- |

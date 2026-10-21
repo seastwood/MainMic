@@ -1,7 +1,7 @@
 import AppKit
 
 /// MainMic's "input level" glyph: five rounded bars, the centre one drawn as a
-/// "1" (the main mic). The geometry matches
+/// "1" with a flag and a base (the main mic). The geometry matches
 /// scripts/make_icon.py so the menu bar icon and the app icon are the same shape.
 enum Glyph {
     static let barHeights: [CGFloat] = [0.42, 0.60, 1.0, 0.62, 0.30]
@@ -10,6 +10,9 @@ enum Glyph {
     /// bar widths (between the rounded ends' centres), at this fraction of a bar's width.
     static let oneFlagOffset = CGPoint(x: 0.9, y: 0.5)
     static let oneFlagWidth: CGFloat = 0.75
+    /// ...and it stands on a base this far either side of the bar's centre (in bar
+    /// widths, to the rounded ends' centres), as thick as the flag.
+    static let oneBaseHalf: CGFloat = 0.8
 
     /// Template image for the menu bar; macOS tints it for light and dark menu bars.
     /// While paused the bars collapse to dots.
@@ -40,13 +43,16 @@ enum Glyph {
             if one && i == heights.count / 2 {
                 let flagRadius = barWidth * oneFlagWidth / 2
                 let start = NSPoint(x: bar.midX, y: bar.maxY - flagRadius)
-                let flag = NSBezierPath()
-                flag.move(to: start)
-                flag.line(to: NSPoint(x: start.x - oneFlagOffset.x * barWidth,
+                let marks = NSBezierPath()  // the flag and the base
+                marks.move(to: start)
+                marks.line(to: NSPoint(x: start.x - oneFlagOffset.x * barWidth,
                                       y: start.y - oneFlagOffset.y * barWidth))
-                flag.lineWidth = flagRadius * 2
-                flag.lineCapStyle = .round
-                flag.stroke()
+                let baseY = bar.minY + flagRadius
+                marks.move(to: NSPoint(x: bar.midX - oneBaseHalf * barWidth, y: baseY))
+                marks.line(to: NSPoint(x: bar.midX + oneBaseHalf * barWidth, y: baseY))
+                marks.lineWidth = flagRadius * 2
+                marks.lineCapStyle = .round
+                marks.stroke()
             }
         }
     }
