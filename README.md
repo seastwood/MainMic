@@ -28,7 +28,7 @@ Click the MainMic icon (five level bars, the middle one a "1" with a base) in th
 
 | Item | What it does |
 | --- | --- |
-| MainMic 1.2.0 | The installed version |
+| MainMic 1.2.1 | The installed version |
 | Up to date / Update Available: … | Whether a newer release is on GitHub. Click **Update Available** to open the release page |
 | Input: … | The current system input |
 | Last fix: … | The last time MainMic switched the input back, and from which device |
